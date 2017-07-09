@@ -1,5 +1,16 @@
 import id.kotlin.fundamentals.data.Companies
 import id.kotlin.fundamentals.data.User
+import id.kotlin.fundamentals.seal.Company
+import id.kotlin.fundamentals.seal.Employee
+import id.kotlin.fundamentals.Employee as Employees
+import id.kotlin.fundamentals.seal.User as Users
+import id.kotlin.fundamentals.utils.User as UserUtils
+
+// Constant value in an extensions file
+const val NAME = "Budi Oktaviyan Suryanto"
+
+// Specify name for existing type
+typealias UserList = List<User>
 
 fun main(args: Array<String>) {
 
@@ -29,16 +40,43 @@ fun main(args: Array<String>) {
     numbers.filter { it in 1..5 }.forEach { println(it) }
 
     // Example implementation of Data Class
-    val user = User("Budi", "Oktaviyan Suryanto", 29)
+    val user = User("Budi ", "Oktaviyan Suryanto", 29)
     val employee = user.copy() // Copy to new object
     println("My name is ${user.firstName.plus(user.lastName)}")
     println("Employee age is ${employee.age}")
 
     // Example implementation of Data Class with empty constructor
-    val companies = Companies()
+    val companies = Companies().apply {
+        companyId = 1
+        companyName = "GO-JEK"
+    }
+    println(companies.companyName)
 
     // Example implementation
     setEmployee("Budi Oktaviyan Suryanto")
+
+    // Example calling employee from sealed class
+    println(getEmployee(Users("Budi", "Oktaviyan Suryanto", 29)))
+    println(getEmployee(Company(1, "GO-JEK")))
+
+    // Example calling constants
+    println(Employees.USER_ID)
+    println(NAME)
+
+    // Example calling a singleton object
+    println(UserUtils.INSTANCE.name)
+
+    // Pair an Object
+    val pairing = Pair(29, "Budi Oktaviyan Suryanto")
+    println(pairing.first)
+    println(pairing.second)
+
+    // Example of fold
+    println(toStringLeft(listOf(Pair(50, 100))))
+    println(toStringRight(listOf(Pair(50, 100))))
+
+    // Example of multiple function
+    println(printName())
 }
 
 // Function with return value
@@ -106,6 +144,33 @@ val employee = try {
 }
 
 // Default value for function parameters
-fun setEmployee(name: String, companyId: Int = -1) {
-    println(name.plus(" - ").plus("Company Id: $companyId"))
+fun setEmployee(name: String, companyId: Int = -1) {}
+
+// Function that call an object from sealed class
+fun getEmployee(employee: Employee): String {
+    return when (employee) {
+        is Users -> employee.firstName.plus(" ").plus(employee.lastName)
+        is Company -> employee.companyName
+    }
+}
+
+// Folding an elements to left
+fun toStringLeft(types: List<Pair<Int, Int>>): String {
+    return types.fold(" -> ") { first, second ->
+        first + second
+    }
+}
+
+// Folding an elements to right
+fun toStringRight(types: List<Pair<Int, Int>>): String {
+    return types.foldRight(" <- ") { first, second ->
+        "" + first + second
+    }
+}
+
+// Multiple function
+fun printName(): String {
+
+    fun myName(): String = "Budi Oktaviyan Suryanto"
+    return myName()
 }
